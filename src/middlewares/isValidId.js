@@ -1,18 +1,10 @@
-import { HttpError } from 'http-errors';
+import { isValidObjectId } from 'mongoose';
+import createHttpError from 'http-errors';
 
-export const errorHandler = (error, req, res, next) => {
-  if (error instanceof HttpError) {
-    res.status(error.status).json({
-      status: error.status,
-      message: error.name,
-      data: error,
-    });
-    return;
+export const isValidId = (req, res, next) => {
+  const { id } = req.params;
+  if (!isValidObjectId(id)) {
+    throw createHttpError(400, 'Bad request');
   }
-
-  res.status(500).json({
-    status: 500,
-    message: 'Something went wrong!',
-    data: error.message,
-  });
+  next();
 };
