@@ -7,10 +7,20 @@ import {
 import createHttpError from 'http-errors';
 import mongoose from 'mongoose';
 import ContactsCollection from '../db/contactModel.js';
+import { parsePaginationParams } from '../utils/parsePaginationParams.js';
+import { parseSortParams } from '../utils/parseSortParams.js';
 
-export const getContactsController = async (_, res, next) => {
+export const getContactsController = async (req, res, next) => {
   try {
-    const data = await getContacts();
+    const { page, perPage } = parsePaginationParams(req.query);
+
+    const { sortBy, sortOrder } = parseSortParams(req.query);
+    const data = await getContacts({
+      page,
+      perPage,
+      sortBy,
+      sortOrder,
+    });
     res.json({
       status: 200,
       message: 'Successfully found contacts!',
@@ -80,7 +90,7 @@ export const patchContactController = async (req, res, next) => {
   res.json({
     status: 200,
     message: 'Successfully patched a contact!',
-    data: result,
+    data: result.student,
   });
 };
 
